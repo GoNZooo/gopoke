@@ -1,4 +1,6 @@
-package main
+// poker is a package for fetching a specified set of websites
+// and logging the response time of each site.
+package poker
 
 import (
 	"encoding/json"
@@ -13,7 +15,7 @@ func (p pokee) String() string {
 	return fmt.Sprintf("%s [%s]", p.Name, p.Url)
 }
 
-func (pr pokeresult) String() string {
+func (pr Pokeresult) String() string {
 	return fmt.Sprintf("%s\t%d in %s", pr.Name, pr.Readsize, pr.Duration)
 }
 
@@ -23,15 +25,15 @@ type pokee struct {
 	Url  string `json:"url"`
 }
 
-// pokeresult is a listing of a name, bytes read and a fetch time
-type pokeresult struct {
+// Pokeresult is a listing of a name, bytes read and a fetch time
+type Pokeresult struct {
 	Name     string        `json:"name"`
 	Readsize int           `json:"readsize"`
 	Duration time.Duration `json:"duration"`
 }
 
 // poke fetches a page and returns the amount of characters read and the time it took to fetch them.
-func poke(p pokee) (result pokeresult) {
+func poke(p pokee) (result Pokeresult) {
 	start := time.Now()
 
 	response, err := http.Get(p.Url)
@@ -45,7 +47,7 @@ func poke(p pokee) (result pokeresult) {
 		log.Fatal(err)
 	}
 
-	result = pokeresult{p.Name, len(data), time.Now().Sub(start)}
+	result = Pokeresult{p.Name, len(data), time.Now().Sub(start)}
 
 	return
 }
@@ -65,7 +67,7 @@ func readpokees(filename string) (pokees []pokee) {
 }
 
 // PokeAll assembles all pingsites read from the given pokeefile and pings them, then returns the results.
-func PokeAll(pokeefile string) (results []pokeresult) {
+func PokeAll(pokeefile string) (results []Pokeresult) {
 	ps := readpokees(pokeefile)
 
 	for _, p := range ps {
@@ -75,10 +77,3 @@ func PokeAll(pokeefile string) (results []pokeresult) {
 	return
 }
 
-func main() {
-	prs := PokeAll("pokees.json")
-
-	for _, pr := range prs {
-		fmt.Printf("%s\n", pr)
-	}
-}
