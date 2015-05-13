@@ -16,7 +16,7 @@ func (p pokee) String() string {
 }
 
 func (pr Pokeresult) String() string {
-	return fmt.Sprintf("%s\t%d in %s", pr.Name, pr.Readsize, pr.Duration)
+	return fmt.Sprintf("Fetched %d bytes from %s in %s", pr.Readsize, pr.Name, pr.Duration)
 }
 
 // pokee is a name for a ping site and a url to fetch.
