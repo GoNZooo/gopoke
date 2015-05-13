@@ -14,7 +14,7 @@ func (p pokee) String() string {
 }
 
 func (pr pokeresult) String() string {
-    return fmt.Sprintf("%s\t%d\t%s", pr.Name, pr.Readsize, pr.Duration)
+    return fmt.Sprintf("%s\t%d in %s", pr.Name, pr.Readsize, pr.Duration)
 }
 
 // A pokee is a name for a ping site and a url to fetch.
@@ -50,6 +50,7 @@ func poke(p pokee) (result pokeresult) {
     return
 }
 
+// Reads all pokees from the given pokeefile and returns an array of pokees
 func readpokees(filename string) (pokees []pokee) {
     pokeedata, err := ioutil.ReadFile(filename)
     if err != nil {
@@ -63,6 +64,7 @@ func readpokees(filename string) (pokees []pokee) {
     return
 }
 
+// Assembles all pingsites read from the given pokeefile and pings them; returns the results.
 func PokeAll(pokeefile string) (results []pokeresult) {
     ps := readpokees(pokeefile)
 
