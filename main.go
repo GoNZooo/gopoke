@@ -1,11 +1,12 @@
-package poker
+package main
 
 import (
     "fmt"
+    "gopoke/poker"
 )
 
 func main() {
-	prs := PokeAll("pokees.json")
+	prs := poker.PokeAll("pokees.json")
 
 	for _, pr := range prs {
 		fmt.Printf("%s\n", pr)
