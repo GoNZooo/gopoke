@@ -16,4 +16,4 @@ One could harness the power of Erlang or Elixir to automatically supervise the s
 
 More information about the facilities to do this kind of thing can be found [here](https://github.com/alco/porcelain).
 
-Obviously these are not Go resources, but the same kind of thing could most likely be done very easily in Go.
+Obviously these are not Go resources, but the same kind of thing could most likely be done in Go, though you would most likely have to make the supervisor entities and such manually, unless someone has basically copied OTP from Erlang to Go.
