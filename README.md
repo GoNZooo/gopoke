@@ -19,4 +19,4 @@ One could harness the power of Erlang or Elixir to automatically supervise the s
 
 More information about the facilities to do this kind of thing can be found [here](https://github.com/alco/porcelain).
 
-Obviously these are not Go resources, but the same kind of thing could most likely be done very easily.
+Obviously these are not Go resources, but the same kind of thing could most likely be done very easily in Go.
