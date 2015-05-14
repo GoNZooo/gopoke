@@ -45,7 +45,7 @@ type Pokeresult struct {
 }
 
 // poke fetches a page and returns the amount of characters read and the time it took to fetch them.
-func poke(p pokee) (result Pokeresult) {
+func poke(p pokee, responsechannel chan<- Pokeresult) {
 	start := time.Now()
 
 	response, err := http.Get(p.Url)
@@ -59,9 +59,7 @@ func poke(p pokee) (result Pokeresult) {
 		log.Fatal(err)
 	}
 
-	result = Pokeresult{p.Name, len(data), time.Now().Sub(start)}
-
-	return
+	responsechannel <- Pokeresult{p.Name, len(data), time.Now().Sub(start)}
 }
 
 // readpokees reads all declared pingsites from the given pokeefile and returns an array of pokees.
@@ -82,8 +80,15 @@ func readpokees(filename string) (pokees []pokee) {
 func PokeAll(pokeefile string) (results []Pokeresult) {
 	ps := readpokees(pokeefile)
 
-	for _, p := range ps {
-		results = append(results, poke(p))
+    responsechannel := make(chan Pokeresult)
+
+    for _, p := range ps {
+        go poke(p, responsechannel)
+    }
+
+    // Gather results from pokesites
+    for n := 0; n < len(ps); n++ {
+		results = append(results, <-responsechannel)
 	}
 
 	return
