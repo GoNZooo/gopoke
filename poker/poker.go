@@ -16,17 +16,17 @@ func (p pokee) String() string {
 }
 
 func (pr Pokeresult) String() string {
-    nametabsize := 2 - (len(pr.Name) / 8)
-    nametabs := ""
-    readtabsize := 2 - (len(fmt.Sprintf("%d", pr.Readsize)) / 8)
-    readtabs := ""
+	nametabsize := 2 - (len(pr.Name) / 8)
+	nametabs := ""
+	readtabsize := 2 - (len(fmt.Sprintf("%d", pr.Readsize)) / 8)
+	readtabs := ""
 
-    for i := 0 ; i <= nametabsize ; i++ {
-        nametabs += "\t"
-    }
-    for i := 0 ; i <= readtabsize ; i++ {
-        readtabs += "\t"
-    }
+	for i := 0; i <= nametabsize; i++ {
+		nametabs += "\t"
+	}
+	for i := 0; i <= readtabsize; i++ {
+		readtabs += "\t"
+	}
 
 	return fmt.Sprintf("%s%s%d%s%s", pr.Name, nametabs, pr.Readsize, readtabs, pr.Duration)
 }
@@ -46,34 +46,34 @@ type Pokeresult struct {
 
 // poke fetches a page and returns the amount of characters read and the time it took to fetch them.
 func poke(p pokee, responsechannel chan<- Pokeresult) {
-    internalchannel := make(chan Pokeresult)
+	internalchannel := make(chan Pokeresult)
 	start := time.Now()
 
-    go func() {
-        response, err := http.Get(p.Url)
-        if err != nil {
-            log.Printf("%s\n", err)
-        }
-        defer response.Body.Close()
+	go func() {
+		response, err := http.Get(p.Url)
+		if err != nil {
+			log.Printf("%s\n", err)
+		}
+		defer response.Body.Close()
 
-        data, err := ioutil.ReadAll(response.Body)
-        datalength := 0
-        if err != nil {
-            log.Printf("%s\n", err)
-            datalength = -1
-        } else {
-            datalength = len(data)
-        }
+		data, err := ioutil.ReadAll(response.Body)
+		datalength := 0
+		if err != nil {
+			log.Printf("%s\n", err)
+			datalength = -1
+		} else {
+			datalength = len(data)
+		}
 
-        internalchannel <- Pokeresult{p.Name, datalength, time.Now().Sub(start)}
-    }()
+		internalchannel <- Pokeresult{p.Name, datalength, time.Now().Sub(start)}
+	}()
 
-    select {
-        case result := <-internalchannel:
-            responsechannel <- result
-        case <-time.After(time.Second * 10):
-            responsechannel <- Pokeresult{p.Name, -1, time.Now().Sub(start)}
-    }
+	select {
+	case result := <-internalchannel:
+		responsechannel <- result
+	case <-time.After(time.Second * 10):
+		responsechannel <- Pokeresult{p.Name, -1, time.Now().Sub(start)}
+	}
 }
 
 // readpokees reads all declared pingsites from the given pokeefile and returns an array of pokees.
@@ -94,17 +94,16 @@ func readpokees(filename string) (pokees []pokee) {
 func PokeAll(pokeefile string) (results []Pokeresult) {
 	ps := readpokees(pokeefile)
 
-    responsechannel := make(chan Pokeresult)
+	responsechannel := make(chan Pokeresult)
 
-    for _, p := range ps {
-        go poke(p, responsechannel)
-    }
+	for _, p := range ps {
+		go poke(p, responsechannel)
+	}
 
-    // Gather results from pokesites
-    for n := 0; n < len(ps); n++ {
+	// Gather results from pokesites
+	for n := 0; n < len(ps); n++ {
 		results = append(results, <-responsechannel)
 	}
 
 	return
 }
-
