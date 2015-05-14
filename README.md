@@ -1,6 +1,3 @@
-gopoke
-------
-
 # What is gopoke?
 
 Gopoke is an application that will use a HTTP GET to ping one or more sites and return the results.
