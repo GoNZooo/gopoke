@@ -22,7 +22,7 @@ func main() {
 	prs := poker.PokeAll(pokeefilepath())
 	diff := time.Now().Sub(start)
 
-	fmt.Println("Site\t\t\tBytes read\tTime to read")
+	fmt.Println("Site\t\t\tBytes read\t\tTime to read")
 	fmt.Println("------------------------------------------------------------")
 	for _, pr := range prs {
 		fmt.Printf("%s\n", pr)
