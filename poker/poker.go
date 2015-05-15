@@ -15,10 +15,28 @@ func (p pokee) String() string {
 	return fmt.Sprintf("%s [%s]", p.Name, p.Url)
 }
 
+func scalesize(readsize int, unit string) (int, string) {
+    if readsize < 1000 {
+        return readsize, unit
+    } else {
+        switch unit {
+        case "B":
+            return scalesize(readsize / 1024, "kB")
+        case "kB":
+            return scalesize(readsize / 1024, "MB")
+        case "MB":
+            return scalesize(readsize / 1024, "GB")
+        }
+    }
+    return 0, "B"
+}
+
 func (pr Pokeresult) String() string {
+    readsizenumber, readsizeunit := scalesize(pr.Readsize, "B")
+
 	nametabsize := 2 - (len(pr.Name) / 8)
 	nametabs := ""
-	readtabsize := 2 - (len(fmt.Sprintf("%d", pr.Readsize)) / 8)
+	readtabsize := 2 - (len(fmt.Sprintf("%d %s", readsizenumber, readsizeunit)) / 8)
 	readtabs := ""
 
 	for i := 0; i <= nametabsize; i++ {
@@ -28,7 +46,8 @@ func (pr Pokeresult) String() string {
 		readtabs += "\t"
 	}
 
-	return fmt.Sprintf("%s%s%d%s%s", pr.Name, nametabs, pr.Readsize, readtabs, pr.Duration)
+
+	return fmt.Sprintf("%s%s%d %s%s%s", pr.Name, nametabs, readsizenumber, readsizeunit, readtabs, pr.Duration)
 }
 
 // pokee is a name for a ping site and a url to fetch.
