@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+    "sync"
 )
 
 func (p pokee) String() string {
@@ -64,7 +65,12 @@ type Pokeresult struct {
 }
 
 // poke fetches a page and returns the amount of characters read and the time it took to fetch them.
-func poke(p pokee, responsechannel chan<- Pokeresult) {
+func poke(p pokee, responsechannel chan Pokeresult, wg *sync.WaitGroup) {
+    // Add 1 to wg; this increments lock counter
+    // Deferred call is a decrementation of this counter
+    wg.Add(1)
+    defer wg.Done()
+
 	internalchannel := make(chan Pokeresult)
 	start := time.Now()
 
@@ -110,19 +116,23 @@ func readpokees(filename string) (pokees []pokee) {
 }
 
 // PokeAll assembles all pingsites read from the given pokeefile and pings them, then returns the results.
-func PokeAll(pokeefile string) (results []Pokeresult) {
+func PokeAll(pokeefile string) (chan Pokeresult) {
+    // WaitGroup to know when to close the channel
+    // channel will be closed when all sites are poked
+    var wg sync.WaitGroup
+    var results = make(chan Pokeresult)
+
 	ps := readpokees(pokeefile)
 
-	responsechannel := make(chan Pokeresult)
-
 	for _, p := range ps {
-		go poke(p, responsechannel)
+		go poke(p, results, &wg)
 	}
 
-	// Gather results from pokesites
-	for n := 0; n < len(ps); n++ {
-		results = append(results, <-responsechannel)
-	}
+    go func() {
+        wg.Wait()
+        close(results)
+    }()
 
-	return
+	// Return resultchannel
+	return results
 }
