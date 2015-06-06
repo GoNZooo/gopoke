@@ -6,7 +6,8 @@ import (
 	"os"
 )
 
-func pokeefilepath() (pokeefile string) {
+func pokeefilepath() {
+    pokeefile := ""
 	if os.Getenv("GOPOKE_POKEES") == "" {
 		pokeefile = os.Getenv("HOME") + "/.local/share/gopoke/pokees.json"
 	} else {
