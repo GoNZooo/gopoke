@@ -8,7 +8,7 @@ import (
 
 func pokeefilepath() (pokeefile string) {
 	if os.Getenv("GOPOKE_POKEES") == "" {
-		pokeefile = os.Getenv("HOME") + ".local/share/gopoke/pokees.json"
+		pokeefile = os.Getenv("HOME") + "/.local/share/gopoke/pokees.json"
 	} else {
 		pokeefile = os.Getenv("GOPOKE_POKEES")
 	}
