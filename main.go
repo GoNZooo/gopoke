@@ -13,7 +13,7 @@ func pokeefilepath() (pokeefile string) {
 		pokeefile = os.Getenv("GOPOKE_POKEES")
 	}
 
-	return
+	return pokeefile
 }
 
 func main() {
