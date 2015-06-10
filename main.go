@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"gopoke/poker"
+	"github.com/GoNZooo/gopoke/poker"
 	"os"
 )
 
