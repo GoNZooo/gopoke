@@ -76,19 +76,19 @@ func poke(p pokee, responsechannel chan Pokeresult, wg *sync.WaitGroup) {
 
 	go func() {
 		response, err := http.Get(p.Url)
+        datalength := 0
 		if err != nil {
-			log.Printf("%s\n", err)
-		}
-		defer response.Body.Close()
-
-		data, err := ioutil.ReadAll(response.Body)
-		datalength := 0
-		if err != nil {
-			log.Printf("%s\n", err)
-			datalength = -1
+            datalength = -1
 		} else {
-			datalength = len(data)
-		}
+            defer response.Body.Close()
+
+            data, err := ioutil.ReadAll(response.Body)
+            if err != nil {
+                datalength = -1
+            } else {
+                datalength = len(data)
+            }
+        }
 
 		internalchannel <- Pokeresult{p.Name, datalength, time.Now().Sub(start)}
 	}()
