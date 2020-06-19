@@ -7,22 +7,20 @@ import (
 	"github.com/GoNZooo/gopoke/poker"
 )
 
-func pokeefilepath() (pokeefile string) {
+func pokeefilepath() string {
 	if os.Getenv("GOPOKE_POKEES") == "" {
-		pokeefile = os.Getenv("HOME") + "/.local/share/gopoke/pokees.json"
-	} else {
-		pokeefile = os.Getenv("GOPOKE_POKEES")
+		return os.Getenv("HOME") + "/.local/share/gopoke/pokees.json"
 	}
 
-	return
+	return os.Getenv("GOPOKE_POKEES")
 }
 
 func main() {
-	prs := poker.PokeAll(pokeefilepath())
+	pokeResults := poker.PokeAll(pokeefilepath())
 
 	fmt.Println("Site\t\t\tBytes read\t\tTime to read")
 	fmt.Println("------------------------------------------------------------")
-	for pr := range prs {
-		fmt.Printf("%s\n", pr)
+	for pokeResult := range pokeResults {
+		fmt.Printf("%s\n", pokeResult)
 	}
 }
