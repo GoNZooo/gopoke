@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/GoNZooo/gopoke/poker"
 	"os"
+
+	"github.com/GoNZooo/gopoke/poker"
 )
 
 func pokeefilepath() (pokeefile string) {
