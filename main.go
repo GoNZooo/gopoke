@@ -33,7 +33,6 @@ func main() {
 
 		os.Exit(1)
 	}
-	fmt.Println(hosts)
 
 	pokeResults := poker.PokeAll(hosts)
 
