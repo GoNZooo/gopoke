@@ -3,11 +3,10 @@
 package poker
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 )
@@ -101,28 +100,37 @@ func poke(p pokee, responsechannel chan Pokeresult, wg *sync.WaitGroup) {
 	}
 }
 
-// readpokees reads all declared pingsites from the given pokeefile and returns an array of pokees.
-func readpokees(filename string) (pokees []pokee) {
-	pokeedata, err := ioutil.ReadFile(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = json.Unmarshal(pokeedata, &pokees)
-	if err != nil {
-		log.Fatal(err)
+func createPokees(pokeeSpecifications []string) []pokee {
+	pokees := make([]pokee, len(pokeeSpecifications))
+
+	for i, p := range pokeeSpecifications {
+		splits := strings.Split(p, "|")
+		pokeeName := splits[0]
+		var pokeeURL string
+		if len(splits) > 1 {
+			pokeeURL = splits[1]
+		} else {
+			pokeeURL = splits[0]
+			hasProtocol :=
+				strings.HasPrefix(pokeeURL, "http://") || strings.HasPrefix(pokeeURL, "https://")
+			if !hasProtocol {
+				pokeeURL = "https://" + pokeeURL
+			}
+		}
+		pokees[i] = pokee{pokeeName, pokeeURL}
 	}
 
-	return
+	return pokees
 }
 
 // PokeAll assembles all pingsites read from the given pokeefile and pings them, then returns the results.
-func PokeAll(pokeefile string) chan Pokeresult {
+func PokeAll(pokeeSpecifications []string) chan Pokeresult {
 	// WaitGroup to know when to close the channel
 	// channel will be closed when all sites are poked
 	var wg sync.WaitGroup
 	var results = make(chan Pokeresult)
 
-	ps := readpokees(pokeefile)
+	ps := createPokees(pokeeSpecifications)
 
 	for _, p := range ps {
 		go poke(p, results, &wg)
@@ -133,6 +141,5 @@ func PokeAll(pokeefile string) chan Pokeresult {
 		close(results)
 	}()
 
-	// Return resultchannel
 	return results
 }
